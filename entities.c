@@ -264,7 +264,12 @@ static const char *const NAMED_ENTITIES[][2] = {
 	{ "yuml;", "ÿ" },
 	{ "zeta;", "ζ" },
 	{ "zwj;", "\xE2\x80\x8D" },
-	{ "zwnj;", "\xE2\x80\x8C" }
+	{ "zwnj;", "\xE2\x80\x8C" },
+	{ "colon;",":" },
+	{ "lpar;","(" },
+	{ "rpar;",")" },
+	{ "NewLine;","\n" },
+	{ "Tab;","\t" }
 };
 
 static int cmp(const void *key, const void *value)
