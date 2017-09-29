@@ -315,6 +315,44 @@ namespace antiFilter {
 			return m0;
 		}
 
+		std::string _filter_style(const boost::smatch& attribute) {
+			bool is_valid = true;
+			static std::map<std::string, std::string> allow_prop_preg = {
+				{ "font-size","^[\\.\\d]+px$" },
+				{ "line-height","^[\\.\\d]+$" },
+				{ "color","^rgb\\(\\ *(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]),\\ *(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]),\\ *(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])\\)$" },
+				{ "background-color","^rgb\\(\\ *(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]),\\ *(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]),\\ *(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])\\)$" },
+				{ "text-decoration","^underline$" },
+				{ "text-align","^left|center|right|justify$" },
+			};
+			std::string style = attribute[2];
+			boost::trim_if(style, boost::is_any_of(" \\t\\n\\r \"\'"));
+			std::vector<std::string> attr_strs;
+			std::vector<std::string> props;
+			boost::regex expression;
+			boost::smatch results;
+			boost::split(attr_strs, style, boost::is_any_of(";"), boost::token_compress_on);
+			int i = 0;
+			for (; i != attr_strs.size(); ++i) {
+				boost::split(props, style, boost::is_any_of(":"), boost::token_compress_on);
+				if (props.size() < 2) {
+					continue;
+				}
+				boost::trim(props[0]);
+				std::map<std::string,std::string>::iterator it = allow_prop_preg.find(props[0]);
+				if (it == allow_prop_preg.end()) {
+					is_valid = false;
+				}
+				expression.assign(it->second);
+				is_valid=boost::regex_search(props[1], results, expression);
+				if (!is_valid) {
+					break;
+				}
+			}
+				//std::cout << *it << endl;
+			return is_valid ? std::string(attribute[0]) : "xss=removed";
+		}
+
 		std::string remove_xss(std::string str) {
 			remove_invisible_characters(str, true);
 			boost::regex expression;

@@ -5,6 +5,8 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string.hpp>  
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
 #include <iostream>
 #include <iterator>
 #include <algorithm>
@@ -346,5 +348,15 @@ namespace antiFilter {
 	std::string _compact_exploded_words(const boost::smatch& match);
 	std::string _filter_attributes(std::string &str);
 	std::string _js_link_removal(const boost::smatch& match);
+	std::string _sanitize_naughty_html(const boost::smatch& match);
+
+
+	typedef std::string(*FUNCPTR)(const boost::smatch& attribute);
+	//attribute filter
+	std::string _filter_style(const boost::smatch& attribute);
+
+	static std::map<std::string, FUNCPTR> _evil_attribute_filter_func = {
+		{ "style",&antiFilter::_filter_style },
+	};
 }
 #endif // !_SECURE_
