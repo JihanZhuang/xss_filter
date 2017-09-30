@@ -1,4 +1,5 @@
 ﻿#ifndef _SECURE_
+#define _SCL_SECURE_NO_WARNINGS 
 #include <boost/regex.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/uuid/uuid.hpp>

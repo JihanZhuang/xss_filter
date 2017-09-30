@@ -292,7 +292,13 @@ namespace antiFilter {
 					trim_value = value;
 					boost::trim(trim_value);
 					if (boost::regex_search(name, results, is_evil_pattern)|| trim_value =="") {
-						attributes.push_back("xss=removed");
+						std::map<std::string, FUNCPTR>::iterator it = _evil_attribute_filter_func.find(name);
+						if (it == _evil_attribute_filter_func.end()) {
+							attributes.push_back("xss=removed");
+						}
+						else {
+							attributes.push_back(_evil_attribute_filter_func[name](attribute));
+						}
 					}
 					else {
 						attributes.push_back(attribute[0]);
@@ -301,6 +307,8 @@ namespace antiFilter {
 					std::string::difference_type l = attribute.length();
 					std::string::difference_type p = attribute.position();
 					s += p + l;
+					
+					m5=m5.substr(attribute.position()+ attribute.length(), m5.length() - attribute.position() - attribute.length() +1);
 				} while (s != e);
 
 				if (attributes.size() != 0) {
@@ -334,17 +342,18 @@ namespace antiFilter {
 			boost::split(attr_strs, style, boost::is_any_of(";"), boost::token_compress_on);
 			int i = 0;
 			for (; i != attr_strs.size(); ++i) {
-				boost::split(props, style, boost::is_any_of(":"), boost::token_compress_on);
+				boost::split(props, attr_strs[i], boost::is_any_of(":"), boost::token_compress_on);
 				if (props.size() < 2) {
 					continue;
 				}
 				boost::trim(props[0]);
-				std::map<std::string,std::string>::iterator it = allow_prop_preg.find(props[0]);
+				std::map<std::string, std::string>::iterator it = allow_prop_preg.find(props[0]);
 				if (it == allow_prop_preg.end()) {
 					is_valid = false;
+					break;
 				}
 				expression.assign(it->second);
-				is_valid=boost::regex_search(props[1], results, expression);
+				is_valid = boost::regex_search(props[1], results, expression);
 				if (!is_valid) {
 					break;
 				}
@@ -457,8 +466,10 @@ int main()
 	boost::regex expression("123.*");
 	std::string str = "%7f          http://%77%77%77%2E%67%6F%6F%67%6C%65%2E%63%6F%6D<span style='color:#00\n66>00;'>&asfa=asf";
 	//std::cout << antiFilter::remove_xss(str) << "\n";
-	str = "%25%25%25%27eval  ('some code') <    img     style=\"12<3\"  >sadfsaf&aacute;sadf</>sadfdsfsdafas<img test='jihanzhuang'&nbsp;&yuml&Aacute;/><img style='asdfsad'&nbsp&yuml&lpar&uuml;/> &nbsp=asdfsad&style=asdfsad&style=asdfsad&style=asdfsad&#x1231∏ /><script></script><a href=asdfsdafdsaalert|&#40;d  a  t  a  :></a>";
-	std::cout<<antiFilter::remove_xss(str)<<"\n";
+	/*str = "%25%25%25%27eval  ('some code') <    img     style=\"12<3\"  >sadfsaf&aacute;sadf</>sadfdsfsdafas<img test='jihanzhuang'&nbsp;&yuml&Aacute;/><img style='asdfsad'&nbsp&yuml&lpar&uuml;/> &nbsp=asdfsad&style=asdfsad&style=asdfsad&style=asdfsad&#x1231∏ /><script></script><a href=asdfsdafdsaalert|&#40;d  a  t  a  :></a>";
+	std::cout<<antiFilter::remove_xss(str)<<"\n";*/
+	str = "<div class=\"v-paragraph-style clear\" style=\"border-radius: 0px;-moz-border-radius: 0px;-webkit-border-radius: 0px;border-width: 3px;border-color: #20A0ff;border-style: none;background: rgba(NaN, NaN, NaN, NaN);\"><p style=\"text-align: center;\"><span style=\"font-size: 18px;\"><strong>绝对人气写真团购报价</strong></span></p><p>①. 咨询送：价值69元香薰精油套装一份</p><p>②. 预约送：价值2000元写真大礼包</p><p>③. 特价写真限量抢定88个优惠名额<br>④. 全程无隐形消费，不满意无条件重拍</p><p><br></p>        </div>";
+	std::cout << antiFilter::remove_xss(str) << "\n";
 	std::string test = "http://%2E%676";
 	std::cout << antiFilter::raw_url_decode(test)<<"\n";
 	test = "123\n123";
