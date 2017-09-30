@@ -477,7 +477,7 @@ int main()
 	str = " style = '12*asfsdafsadf*32' style = \"1232\"";
 	std::cout<<antiFilter::_filter_attributes(str) << "\n";
 	str="<    img     style='123'  >sadfsafsadf</>";
-		expression.assign("<((?<slash>/*\\s*)((?<tagName>[a-z0-9]+)(?=[^a-z0-9]|$)|.+)[^\\s\042\047a-z0-9>/=]*(?<attributes>(?:[\\s\042\047/=]*[^\\s\042\047>/=]+(?:\\s*=(?:[^\\s\042\047=><`]+|\\s*\042[^\042]*\042|\\s*\047[^\047]*\047|\\s*(?:[^\\s\042\047=><`]*)))?)*)[^>]*)(?<closeTag>\>)?", boost::regex::icase);
+	expression.assign("<((?<slash>/*\\s*)((?<tagName>[a-z0-9]+)(?=[^a-z0-9]|$)|.+)[^\\s\042\047a-z0-9>/=]*(?<attributes>(?:[\\s\042\047/=]*[^\\s\042\047>/=]+(?:\\s*=(?:[^\\s\042\047=><`]+|\\s*\042[^\042]*\042|\\s*\047[^\047]*\047|\\s*(?:[^\\s\042\047=><`]*)))?)*)[^>]*)(?<closeTag>\>)?", boost::regex::icase);
 
 	str = boost::regex_replace(str, expression, antiFilter::_sanitize_naughty_html, boost::match_perl);
 
