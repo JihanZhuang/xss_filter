@@ -334,7 +334,7 @@ namespace antiFilter {
 				{ "text-align","^left|center|right|justify$" },
 			};
 			std::string style = attribute[2];
-			boost::trim_if(style, boost::is_any_of(" \\t\\n\\r \"\'"));
+			boost::trim_if(style, boost::is_any_of(" \t\n\r\"\'"));
 			std::vector<std::string> attr_strs;
 			std::vector<std::string> props;
 			boost::regex expression;
@@ -353,6 +353,7 @@ namespace antiFilter {
 					break;
 				}
 				expression.assign(it->second);
+				boost::trim(props[1]);
 				is_valid = boost::regex_search(props[1], results, expression);
 				if (!is_valid) {
 					break;
@@ -435,6 +436,7 @@ namespace antiFilter {
 			do {
 				original = str;
 				str = boost::regex_replace(str, expression, antiFilter::_sanitize_naughty_html, boost::match_perl);
+				str;
 			} while (original != str);
 
 
@@ -468,8 +470,11 @@ int main()
 	//std::cout << antiFilter::remove_xss(str) << "\n";
 	/*str = "%25%25%25%27eval  ('some code') <    img     style=\"12<3\"  >sadfsaf&aacute;sadf</>sadfdsfsdafas<img test='jihanzhuang'&nbsp;&yuml&Aacute;/><img style='asdfsad'&nbsp&yuml&lpar&uuml;/> &nbsp=asdfsad&style=asdfsad&style=asdfsad&style=asdfsad&#x1231∏ /><script></script><a href=asdfsdafdsaalert|&#40;d  a  t  a  :></a>";
 	std::cout<<antiFilter::remove_xss(str)<<"\n";*/
+	char line[1000];
+	std::cout << "Enter encoded line: ";
+	std::cin.getline(line, sizeof line);
 	str = "<div class=\"v-paragraph-style clear\" style=\"border-radius: 0px;-moz-border-radius: 0px;-webkit-border-radius: 0px;border-width: 3px;border-color: #20A0ff;border-style: none;background: rgba(NaN, NaN, NaN, NaN);\"><p style=\"text-align: center;\"><span style=\"font-size: 18px;\"><strong>绝对人气写真团购报价</strong></span></p><p>①. 咨询送：价值69元香薰精油套装一份</p><p>②. 预约送：价值2000元写真大礼包</p><p>③. 特价写真限量抢定88个优惠名额<br>④. 全程无隐形消费，不满意无条件重拍</p><p><br></p>        </div>";
-	std::cout << antiFilter::remove_xss(str) << "\n";
+	std::cout << antiFilter::remove_xss(line) << "\n";
 	std::string test = "http://%2E%676";
 	std::cout << antiFilter::raw_url_decode(test)<<"\n";
 	test = "123\n123";
@@ -481,7 +486,6 @@ int main()
 
 	str = boost::regex_replace(str, expression, antiFilter::_sanitize_naughty_html, boost::match_perl);
 
-	char line[100];
 	std::cout << "Enter encoded line: ";
 	std::cin.getline(line, sizeof line);
 	decode_html_entities_utf8(line, 0);
